@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Celestial Wishes | Interdimensional Greeting Portal</title>
   <meta name="description" content="Send and receive dynamic, PPT-style cosmic greetings for Birthdays, Congratulations, and Milestones with 3D Black Hole singularity and 7-day auto-purge.">
   <meta name="theme-color" content="#090a16">
@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Dancing+Script:wght@600;700&family=Orbitron:wght@500;700;900&family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/style.css">
 
   <!-- Confetti Canvas Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -35,7 +35,7 @@
 
       <div class="brand-badge">
         <span class="brand-icon">🪐</span>
-        <span class="brand-name">CELESTIAL<span class="brand-highlight">WISHES</span></span>
+        <span class="brand-name"><span class="brand-name-full">CELESTIAL</span><span class="brand-highlight">WISHES</span></span>
       </div>
 
       <div class="nav-actions">
@@ -47,18 +47,18 @@
             <span class="bar bar-2"></span>
             <span class="bar bar-3"></span>
           </span>
-          <span id="current-track-name" class="track-label">Music: Off</span>
+          <span id="current-track-name" class="track-label nav-label-desktop">Music: Off</span>
         </button>
 
         <!-- Sound FX Toggle -->
         <button id="btn-sound-toggle" class="nav-btn sound-btn" title="Toggle Sound FX" aria-label="Toggle Sound Effects">
-          🔊 <span class="sr-only">Sound ON</span>
+          <span id="sound-icon-symbol">🔊</span> <span class="sr-only">Sound ON</span>
         </button>
 
         <!-- Atmosphere & Visual Customizer Button -->
         <button id="btn-open-customizer" class="nav-btn customizer-btn" title="Customize Visuals, Door, Black Hole & Music" aria-label="Customizer">
           <span class="customizer-icon">🎨</span>
-          <span class="nav-btn-text">Customize</span>
+          <span class="nav-btn-text nav-label-desktop">Customize</span>
         </button>
       </div>
     </div>
@@ -830,10 +830,10 @@
   </div>
 
   <!-- Application Scripts -->
-  <script src="audio.js"></script>
-  <script src="blackhole.js"></script>
-  <script src="canvas-editor.js"></script>
-  <script src="storage.js"></script>
-  <script src="app.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/blackhole.js"></script>
+  <script src="js/canvas-editor.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
