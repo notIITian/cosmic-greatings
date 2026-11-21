@@ -15,15 +15,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Dancing+Script:wght@600;700&family=Orbitron:wght@500;700;900&family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/style.css">
 
   <!-- Confetti Canvas Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
 <body class="cosmic-body">
 
-  <!-- Background Ambient Particles Canvas -->
-  <div class="ambient-stars-layer" aria-hidden="true"></div>
+  <!-- Handcrafted Ambient Canvas: Twinkling Stardust, Nebulae & Shooting Stars -->
+  <canvas id="ambient-canvas" class="ambient-stars-canvas" aria-hidden="true"></canvas>
 
   <!-- Global Header Bar -->
   <header class="global-navbar">
@@ -39,8 +39,26 @@
       </div>
 
       <div class="nav-actions">
-        <button id="btn-sound-toggle" class="nav-btn sound-btn" title="Toggle Sound" aria-label="Toggle Sound">
+        <!-- Floating Music Player Pill -->
+        <button id="btn-music-toggle" class="nav-btn music-btn" title="Toggle Ambient Music" aria-label="Toggle Music">
+          <span class="music-icon">🎵</span>
+          <span class="eq-bars">
+            <span class="bar bar-1"></span>
+            <span class="bar bar-2"></span>
+            <span class="bar bar-3"></span>
+          </span>
+          <span id="current-track-name" class="track-label">Music: Off</span>
+        </button>
+
+        <!-- Sound FX Toggle -->
+        <button id="btn-sound-toggle" class="nav-btn sound-btn" title="Toggle Sound FX" aria-label="Toggle Sound Effects">
           🔊 <span class="sr-only">Sound ON</span>
+        </button>
+
+        <!-- Atmosphere & Visual Customizer Button -->
+        <button id="btn-open-customizer" class="nav-btn customizer-btn" title="Customize Visuals, Door, Black Hole & Music" aria-label="Customizer">
+          <span class="customizer-icon">🎨</span>
+          <span class="nav-btn-text">Customize</span>
         </button>
       </div>
     </div>
@@ -283,6 +301,8 @@
                 <button class="bg-theme-option theme-sunset" data-theme="bg-sunset" title="Romantic Sunset"></button>
                 <button class="bg-theme-option theme-cyber" data-theme="bg-cyber" title="Cyber Neon"></button>
                 <button class="bg-theme-option theme-pearl" data-theme="bg-pearl" title="Pearl Luxury"></button>
+                <button class="bg-theme-option theme-botanical" data-theme="bg-botanical" title="Emerald Botanical"></button>
+                <button class="bg-theme-option theme-parchment" data-theme="bg-parchment" title="Antique Parchment"></button>
               </div>
             </div>
 
@@ -357,41 +377,91 @@
             <p class="door-subtitle">Enter your 12-digit access code to break the seal and unlock the dimensional passage.</p>
           </div>
 
-          <!-- 3D Realistic Wooden Door Component -->
+          <!-- 3D Realistic Handcrafted Wooden Door Component -->
           <div class="wooden-door-perspective">
-            <div id="wooden-door-wrapper" class="wooden-door-wrapper">
+            <div id="wooden-door-wrapper" class="wooden-door-wrapper wood-oak">
               
               <!-- Left Wooden Door Leaf -->
               <div class="door-leaf door-leaf-left">
-                <div class="wood-grain-overlay"></div>
-                <div class="iron-band band-top"></div>
-                <div class="iron-band band-bottom"></div>
+                <!-- Multi-plank timber relief -->
+                <div class="planks-container">
+                  <div class="plank plank-1"></div>
+                  <div class="plank plank-2"></div>
+                  <div class="plank plank-3"></div>
+                </div>
+
+                <!-- Forged iron cross-straps with faceted rivets -->
+                <div class="iron-band band-top">
+                  <span class="rivet"></span><span class="rivet"></span><span class="rivet"></span>
+                </div>
+                <div class="iron-band band-bottom">
+                  <span class="rivet"></span><span class="rivet"></span><span class="rivet"></span>
+                </div>
+
+                <!-- Heavy iron hinges -->
                 <div class="iron-hinge hinge-top"></div>
                 <div class="iron-hinge hinge-bottom"></div>
-                <div class="iron-ring handle-left"></div>
+
+                <!-- Interactive Antique Ring Knocker (Click to knock!) -->
+                <div class="door-knocker-wrap knocker-left" id="knocker-left" title="Click to knock on the door!">
+                  <div class="knocker-plate"></div>
+                  <div class="knocker-ring"></div>
+                </div>
+
+                <!-- Carved Celestial Sigil (Half on left) -->
+                <div class="carved-crest crest-left"></div>
               </div>
 
               <!-- Right Wooden Door Leaf -->
               <div class="door-leaf door-leaf-right">
-                <div class="wood-grain-overlay"></div>
-                <div class="iron-band band-top"></div>
-                <div class="iron-band band-bottom"></div>
+                <!-- Multi-plank timber relief -->
+                <div class="planks-container">
+                  <div class="plank plank-1"></div>
+                  <div class="plank plank-2"></div>
+                  <div class="plank plank-3"></div>
+                </div>
+
+                <!-- Forged iron cross-straps with faceted rivets -->
+                <div class="iron-band band-top">
+                  <span class="rivet"></span><span class="rivet"></span><span class="rivet"></span>
+                </div>
+                <div class="iron-band band-bottom">
+                  <span class="rivet"></span><span class="rivet"></span><span class="rivet"></span>
+                </div>
+
+                <!-- Heavy iron hinges -->
                 <div class="iron-hinge hinge-top"></div>
                 <div class="iron-hinge hinge-bottom"></div>
-                <div class="iron-ring handle-right"></div>
+
+                <!-- Interactive Antique Ring Knocker (Click to knock!) -->
+                <div class="door-knocker-wrap knocker-right" id="knocker-right" title="Click to knock on the door!">
+                  <div class="knocker-plate"></div>
+                  <div class="knocker-ring"></div>
+                </div>
+
+                <!-- Carved Celestial Sigil (Half on right) -->
+                <div class="carved-crest crest-right"></div>
               </div>
 
-              <!-- Heavy Antique Glowing Padlock -->
+              <!-- Dimensional Seam Light Leaking Through Planks -->
+              <div class="door-light-beam"></div>
+
+              <!-- Heavy Antique Glowing Brass Padlock & Chains -->
               <div id="door-padlock" class="heavy-padlock">
+                <div class="padlock-chain chain-left">
+                  <span class="chain-link"></span><span class="chain-link"></span><span class="chain-link"></span>
+                </div>
+                <div class="padlock-chain chain-right">
+                  <span class="chain-link"></span><span class="chain-link"></span><span class="chain-link"></span>
+                </div>
                 <div class="padlock-shackle"></div>
                 <div class="padlock-body">
+                  <div class="padlock-filigree"></div>
                   <div class="keyhole-glow"></div>
                 </div>
-                <div class="padlock-chain chain-left"></div>
-                <div class="padlock-chain chain-right"></div>
               </div>
 
-              <!-- Behind-door Portal Glow -->
+              <!-- Behind-door Dimensional Portal Glow -->
               <div class="behind-door-portal"></div>
 
             </div>
@@ -582,11 +652,127 @@
     </div>
   </div>
 
+  <!-- ========================================== -->
+  <!-- MODAL: ARTISAN ATMOSPHERE & THEME CUSTOMIZER -->
+  <!-- ========================================== -->
+  <div id="customizer-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card customizer-card">
+      <button id="btn-close-customizer" class="modal-close-btn" aria-label="Close Customizer">✕</button>
+
+      <div class="modal-icon-badge">🎨</div>
+      <h3 class="modal-title">Artisan Customizer</h3>
+      <p class="modal-subtitle">Tweak the handcrafted atmosphere, woodcraft door, singularity colors, and music.</p>
+
+      <div class="customizer-sections">
+        
+        <!-- SECTION 1: BLACK HOLE THEME -->
+        <div class="customizer-section">
+          <label class="customizer-label">🪐 3D Black Hole Singularity Style:</label>
+          <div class="customizer-chips-grid">
+            <button class="custom-chip active" data-bh="gargantua">
+              <span class="chip-color color-gold"></span>
+              <span>Gargantua Gold</span>
+            </button>
+            <button class="custom-chip" data-bh="cyber">
+              <span class="chip-color color-cyan"></span>
+              <span>Cyber Cyan</span>
+            </button>
+            <button class="custom-chip" data-bh="violet">
+              <span class="chip-color color-violet"></span>
+              <span>Cosmic Violet</span>
+            </button>
+            <button class="custom-chip" data-bh="supernova">
+              <span class="chip-color color-crimson"></span>
+              <span>Supernova Crimson</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SECTION 2: WOODEN DOOR CRAFT -->
+        <div class="customizer-section">
+          <label class="customizer-label">🚪 Sealed Vault Door Woodcraft:</label>
+          <div class="customizer-chips-grid">
+            <button class="custom-chip active" data-door="wood-oak">
+              <span>🪵 Ancient Royal Oak</span>
+            </button>
+            <button class="custom-chip" data-door="wood-walnut">
+              <span>🌰 Midnight Walnut</span>
+            </button>
+            <button class="custom-chip" data-door="wood-rune">
+              <span>✨ Mystic Runed Timber</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SECTION 3: BACKGROUND COSMIC NEBULA -->
+        <div class="customizer-section">
+          <label class="customizer-label">🌌 Background Cosmic Atmosphere:</label>
+          <div class="customizer-chips-grid">
+            <button class="custom-chip active" data-nebula="nebula-deep">
+              <span>Deep Stellar</span>
+            </button>
+            <button class="custom-chip" data-nebula="nebula-dawn">
+              <span>Golden Dawn</span>
+            </button>
+            <button class="custom-chip" data-nebula="nebula-aurora">
+              <span>Cyber Aurora</span>
+            </button>
+            <button class="custom-chip" data-nebula="nebula-rose">
+              <span>Velvet Rose</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SECTION 4: BACKGROUND MUSIC & SOUND -->
+        <div class="customizer-section">
+          <label class="customizer-label">🎵 Ambient Celebration Music Track:</label>
+          <div class="customizer-chips-grid">
+            <button class="custom-chip active" data-track="cosmic">
+              <span>🌌 Cosmic Odyssey</span>
+            </button>
+            <button class="custom-chip" data-track="birthday">
+              <span>🎂 Starlight Birthday</span>
+            </button>
+            <button class="custom-chip" data-track="triumph">
+              <span>🏆 Triumph Fanfare</span>
+            </button>
+          </div>
+
+          <!-- Custom MP3 Upload -->
+          <div class="custom-audio-upload-box">
+            <label for="custom-bgm-file" class="custom-audio-label">
+              <span>📁 Or Upload Custom Background Music (MP3):</span>
+              <input type="file" id="custom-bgm-file" accept="audio/*" class="custom-file-input" />
+            </label>
+            <span id="custom-bgm-status" class="custom-bgm-status">Default Procedural Music</span>
+          </div>
+        </div>
+
+        <!-- SECTION 5: CELESTIAL EFFECTS (SHOOTING STARS) -->
+        <div class="customizer-section customizer-row">
+          <div>
+            <label class="customizer-label">🌠 Shooting Stars & Meteors:</label>
+            <p class="customizer-hint">Occasional shooting star streaks in the background night sky</p>
+          </div>
+          <label class="custom-toggle">
+            <input type="checkbox" id="toggle-shooting-stars" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <button id="btn-save-customizer" class="modal-share-full-btn" style="margin-top: 18px;">
+        <span>✓ Apply Handcrafted Atmosphere</span>
+      </button>
+    </div>
+  </div>
+
   <!-- Application Scripts -->
-  <script src="audio.js"></script>
-  <script src="blackhole.js"></script>
-  <script src="canvas-editor.js"></script>
-  <script src="storage.js"></script>
-  <script src="app.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/blackhole.js"></script>
+  <script src="js/canvas-editor.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

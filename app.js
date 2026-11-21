@@ -18,8 +18,130 @@
     slideEditor: null,
     blackHole: null,
     unlockedGreeting: null,
-    isProcessingUnlock: false
+    isProcessingUnlock: false,
+    blackHoleTheme: 'gargantua',
+    doorWoodTheme: 'wood-oak',
+    nebulaTheme: 'nebula-deep',
+    ambientEngine: null
   };
+
+  // --- HANDCRAFTED AMBIENT CANVAS (STARDUST & SHOOTING STARS) ---
+  class AmbientCanvasEngine {
+    constructor(canvasId) {
+      this.canvas = document.getElementById(canvasId);
+      if (!this.canvas) return;
+      this.ctx = this.canvas.getContext('2d');
+      this.particles = [];
+      this.meteors = [];
+      this.shootingStarsEnabled = true;
+      this.resize();
+      this.initParticles();
+      window.addEventListener('resize', () => this.resize());
+      this.animate = this.animate.bind(this);
+      requestAnimationFrame(this.animate);
+
+      // Periodically trigger realistic shooting stars
+      setInterval(() => {
+        if (this.shootingStarsEnabled && Math.random() > 0.3) {
+          this.spawnMeteor();
+        }
+      }, 4000);
+    }
+
+    resize() {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    }
+
+    initParticles() {
+      this.particles = [];
+      const count = Math.min(80, Math.floor((window.innerWidth * window.innerHeight) / 14000));
+      for (let i = 0; i < count; i++) {
+        this.particles.push({
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * this.canvas.height,
+          size: Math.random() * 1.8 + 0.6,
+          vx: (Math.random() - 0.5) * 0.25,
+          vy: -Math.random() * 0.35 - 0.1,
+          alpha: Math.random() * 0.7 + 0.3,
+          twinkleSpeed: Math.random() * 0.03 + 0.01,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    spawnMeteor() {
+      const startX = Math.random() * this.canvas.width * 0.8 + 50;
+      const startY = Math.random() * this.canvas.height * 0.35;
+      const angle = (Math.PI / 4) + (Math.random() * 0.3 - 0.15); // ~45 deg downward
+      const speed = Math.random() * 8 + 12;
+      this.meteors.push({
+        x: startX,
+        y: startY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        length: Math.random() * 110 + 80,
+        life: 1.0,
+        decay: Math.random() * 0.025 + 0.018
+      });
+    }
+
+    animate() {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      // 1. Draw Stardust particles
+      this.particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.phase += p.twinkleSpeed;
+        if (p.y < -10) { p.y = this.canvas.height + 10; p.x = Math.random() * this.canvas.width; }
+        if (p.x < -10) p.x = this.canvas.width + 10;
+        if (p.x > this.canvas.width + 10) p.x = -10;
+
+        const currentAlpha = p.alpha * (0.6 + 0.4 * Math.sin(p.phase));
+        this.ctx.beginPath();
+        this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        this.ctx.fillStyle = `rgba(226, 232, 240, ${currentAlpha})`;
+        this.ctx.shadowBlur = p.size * 3;
+        this.ctx.shadowColor = '#38bdf8';
+        this.ctx.fill();
+        this.ctx.shadowBlur = 0;
+      });
+
+      // 2. Draw Shooting Stars / Meteors
+      for (let i = this.meteors.length - 1; i >= 0; i--) {
+        const m = this.meteors[i];
+        m.x += m.vx;
+        m.y += m.vy;
+        m.life -= m.decay;
+
+        if (m.life <= 0 || m.x > this.canvas.width + 100 || m.y > this.canvas.height + 100) {
+          this.meteors.splice(i, 1);
+          continue;
+        }
+
+        const tailX = m.x - (m.vx / 14) * m.length;
+        const tailY = m.y - (m.vy / 14) * m.length;
+
+        const grad = this.ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+        grad.addColorStop(0, `rgba(255, 255, 255, ${Math.min(1.0, m.life * 1.5)})`);
+        grad.addColorStop(0.3, `rgba(56, 189, 248, ${m.life * 0.8})`);
+        grad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(m.x, m.y);
+        this.ctx.lineTo(tailX, tailY);
+        this.ctx.strokeStyle = grad;
+        this.ctx.lineWidth = 2.0;
+        this.ctx.shadowBlur = 8;
+        this.ctx.shadowColor = '#ffffff';
+        this.ctx.stroke();
+        this.ctx.shadowBlur = 0;
+      }
+
+      requestAnimationFrame(this.animate);
+    }
+  }
 
   // Safe confetti trigger (with pure canvas fallback if CDN is blocked/offline)
   function triggerCelebrationConfetti(count = 70) {
@@ -540,6 +662,9 @@
     } else {
       state.blackHole.resetScene();
     }
+    if (state.blackHole && state.blackHole.setTheme) {
+      state.blackHole.setTheme(state.blackHoleTheme);
+    }
   }
 
   // Step 3: Enter Singularity Button Clicked (Warp Plunge)
@@ -985,6 +1110,192 @@
         switchView('send');
       });
     }
+
+    // --- ARTISAN ENHANCEMENTS: CANVAS, DOOR KNOCKERS & MUSIC ---
+    // 1. Initialize Ambient Canvas Engine (Stardust & Shooting Stars)
+    state.ambientEngine = new AmbientCanvasEngine('ambient-canvas');
+
+    // 2. Interactive Wooden Door Ring Knockers
+    const knockerLeft = document.getElementById('knocker-left');
+    const knockerRight = document.getElementById('knocker-right');
+    [knockerLeft, knockerRight].forEach(k => {
+      if (k) {
+        k.addEventListener('click', (e) => {
+          e.stopPropagation();
+          k.classList.add('knocking');
+          if (window.SoundSystem) window.SoundSystem.playDoorKnock();
+          setTimeout(() => k.classList.remove('knocking'), 450);
+        });
+      }
+    });
+
+    // 3. Floating Background Music Player Pill
+    const btnMusic = document.getElementById('btn-music-toggle');
+    const trackLabel = document.getElementById('current-track-name');
+    if (btnMusic) {
+      btnMusic.addEventListener('click', () => {
+        if (window.SoundSystem) {
+          const isPlaying = window.SoundSystem.toggleBackgroundMusic();
+          if (isPlaying) {
+            btnMusic.classList.add('music-playing');
+            if (trackLabel) trackLabel.textContent = 'Music: On';
+          } else {
+            btnMusic.classList.remove('music-playing');
+            if (trackLabel) trackLabel.textContent = 'Music: Off';
+          }
+        }
+      });
+    }
+
+    // 4. Artisan Customizer Modal Open / Close
+    const btnOpenCustomizer = document.getElementById('btn-open-customizer');
+    const btnCloseCustomizer = document.getElementById('btn-close-customizer');
+    const btnSaveCustomizer = document.getElementById('btn-save-customizer');
+    const customizerModal = document.getElementById('customizer-modal');
+
+    const toggleCustomizerModal = (show) => {
+      if (!customizerModal) return;
+      if (show) {
+        customizerModal.classList.remove('hidden');
+        if (window.SoundSystem) window.SoundSystem.playClick();
+      } else {
+        customizerModal.classList.add('hidden');
+      }
+    };
+
+    if (btnOpenCustomizer) btnOpenCustomizer.addEventListener('click', () => toggleCustomizerModal(true));
+    if (btnCloseCustomizer) btnCloseCustomizer.addEventListener('click', () => toggleCustomizerModal(false));
+    if (btnSaveCustomizer) btnSaveCustomizer.addEventListener('click', () => {
+      toggleCustomizerModal(false);
+      if (window.SoundSystem) window.SoundSystem.playClick();
+      try {
+        localStorage.setItem('celestial_customizer_prefs', JSON.stringify({
+          bh: state.blackHoleTheme,
+          door: state.doorWoodTheme,
+          nebula: state.nebulaTheme,
+          stars: state.ambientEngine ? state.ambientEngine.shootingStarsEnabled : true
+        }));
+      } catch (e) {}
+    });
+
+    // Black Hole Theme Chips
+    document.querySelectorAll('[data-bh]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('[data-bh]').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        state.blackHoleTheme = chip.dataset.bh;
+        if (state.blackHole && state.blackHole.setTheme) {
+          state.blackHole.setTheme(state.blackHoleTheme);
+        }
+        if (window.SoundSystem) window.SoundSystem.playClick();
+      });
+    });
+
+    // Door Woodcraft Chips
+    document.querySelectorAll('[data-door]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('[data-door]').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        state.doorWoodTheme = chip.dataset.door;
+        const doorWrapper = document.getElementById('wooden-door-wrapper');
+        if (doorWrapper) {
+          doorWrapper.className = `wooden-door-wrapper ${state.doorWoodTheme}`;
+        }
+        if (window.SoundSystem) window.SoundSystem.playClick();
+      });
+    });
+
+    // Cosmic Nebula Atmosphere Chips
+    document.querySelectorAll('[data-nebula]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('[data-nebula]').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        state.nebulaTheme = chip.dataset.nebula;
+        document.body.className = `cosmic-body ${state.nebulaTheme}`;
+        if (window.SoundSystem) window.SoundSystem.playClick();
+      });
+    });
+
+    // Music Track Chips
+    document.querySelectorAll('[data-track]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('[data-track]').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const track = chip.dataset.track;
+        if (window.SoundSystem) {
+          window.SoundSystem.currentTrack = track;
+          if (window.SoundSystem.bgmPlaying) {
+            window.SoundSystem.startBackgroundMusic(track);
+          }
+          window.SoundSystem.playClick();
+        }
+      });
+    });
+
+    // Custom MP3 Audio Upload
+    const customBgmInput = document.getElementById('custom-bgm-file');
+    const customBgmStatus = document.getElementById('custom-bgm-status');
+    if (customBgmInput) {
+      customBgmInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        if (window.SoundSystem) {
+          if (window.SoundSystem.customAudio) {
+            window.SoundSystem.customAudio.pause();
+          }
+          window.SoundSystem.customAudio = new Audio(url);
+          window.SoundSystem.customAudio.loop = true;
+          window.SoundSystem.customAudio.volume = 0.5;
+          window.SoundSystem.stopBackgroundMusic();
+          window.SoundSystem.customAudio.play().catch(() => {});
+          if (btnMusic) btnMusic.classList.add('music-playing');
+          if (trackLabel) trackLabel.textContent = file.name;
+          if (customBgmStatus) customBgmStatus.textContent = `Playing: ${file.name}`;
+        }
+      });
+    }
+
+    // Shooting Stars Toggle
+    const toggleStars = document.getElementById('toggle-shooting-stars');
+    if (toggleStars && state.ambientEngine) {
+      toggleStars.addEventListener('change', (e) => {
+        state.ambientEngine.shootingStarsEnabled = e.target.checked;
+        if (window.SoundSystem) window.SoundSystem.playClick();
+      });
+    }
+
+    // Load saved customizer preferences
+    try {
+      const savedPrefs = JSON.parse(localStorage.getItem('celestial_customizer_prefs') || '{}');
+      if (savedPrefs.bh) {
+        state.blackHoleTheme = savedPrefs.bh;
+        const chip = document.querySelector(`[data-bh="${savedPrefs.bh}"]`);
+        if (chip) {
+          document.querySelectorAll('[data-bh]').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+        }
+      }
+      if (savedPrefs.door) {
+        state.doorWoodTheme = savedPrefs.door;
+        const doorWrapper = document.getElementById('wooden-door-wrapper');
+        if (doorWrapper) doorWrapper.className = `wooden-door-wrapper ${state.doorWoodTheme}`;
+        const chip = document.querySelector(`[data-door="${savedPrefs.door}"]`);
+        if (chip) {
+          document.querySelectorAll('[data-door]').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+        }
+      }
+      if (savedPrefs.nebula) {
+        state.nebulaTheme = savedPrefs.nebula;
+        document.body.className = `cosmic-body ${state.nebulaTheme}`;
+        const chip = document.querySelector(`[data-nebula="${savedPrefs.nebula}"]`);
+        if (chip) {
+          document.querySelectorAll('[data-nebula]').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+        }
+      }
+    } catch (e) {}
 
     // Auto-detect ?code= or compressed greeting in URL on initial page load
     if (window.CelestialStorage) {
