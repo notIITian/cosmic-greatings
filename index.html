@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>Celestial Wishes | Interdimensional Greeting Portal</title>
+  <meta name="description" content="Send and receive dynamic, PPT-style cosmic greetings for Birthdays, Congratulations, and Milestones with 3D Black Hole singularity and 7-day auto-purge.">
+  <meta name="theme-color" content="#090a16">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Dancing+Script:wght@600;700&family=Orbitron:wght@500;700;900&family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Confetti Canvas Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+</head>
+<body class="cosmic-body">
+
+  <!-- Background Ambient Particles Canvas -->
+  <div class="ambient-stars-layer" aria-hidden="true"></div>
+
+  <!-- Global Header Bar -->
+  <header class="global-navbar">
+    <div class="nav-container">
+      <button id="global-back-btn" class="nav-btn nav-back-btn hidden" title="Back to Main Menu" aria-label="Go Back">
+        <span class="nav-btn-icon">←</span>
+        <span class="nav-btn-text">Back</span>
+      </button>
+
+      <div class="brand-badge">
+        <span class="brand-icon">🪐</span>
+        <span class="brand-name">CELESTIAL<span class="brand-highlight">WISHES</span></span>
+      </div>
+
+      <div class="nav-actions">
+        <button id="btn-sound-toggle" class="nav-btn sound-btn" title="Toggle Sound" aria-label="Toggle Sound">
+          🔊 <span class="sr-only">Sound ON</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Multi-View Container -->
+  <main class="main-viewport">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: ROOT PAGE (Two Branches: SEND / RECEIVE) -->
+    <!-- ========================================== -->
+    <section id="view-root" class="view-screen active">
+      <div class="root-hero-container">
+        <div class="root-hero-glow"></div>
+        <span class="hero-chip">✨ INTERDIMENSIONAL GREETING NETWORK</span>
+        <h1 class="root-title">Send A Wish Across<br><span class="gradient-text">Space & Time</span></h1>
+        <p class="root-subtitle">
+          Design a rich presentation card, seal it behind a 12-digit cosmic key, or plunge through a 3D black hole singularity to unlock your personalized celebration.
+        </p>
+
+        <!-- The Two Main Branches -->
+        <div class="root-branches-grid">
+          <!-- Branch 1: SEND -->
+          <div class="portal-card send-portal-card" id="btn-root-send" role="button" tabindex="0">
+            <div class="portal-card-glow send-glow"></div>
+            <div class="portal-card-header">
+              <span class="portal-badge">BRANCH 01</span>
+              <span class="portal-icon">🚀</span>
+            </div>
+            <h2 class="portal-title">SEND WISH</h2>
+            <p class="portal-desc">
+              Select your wish (Birthday / Congrats / Custom), choose the celebration date with our live calendar, and design a custom PPT slide!
+            </p>
+            <div class="portal-features">
+              <span>✦ 12-Digit Key Generation</span>
+              <span>✦ Live Interactive Calendar</span>
+              <span>✦ PPT-Style Slide Canvas</span>
+            </div>
+            <button class="portal-action-btn send-btn-theme">
+              Enter Sender Console →
+            </button>
+          </div>
+
+          <!-- Branch 2: RECEIVE -->
+          <div class="portal-card receive-portal-card" id="btn-root-receive" role="button" tabindex="0">
+            <div class="portal-card-glow receive-glow"></div>
+            <div class="portal-card-header">
+              <span class="portal-badge">BRANCH 02</span>
+              <span class="portal-icon">🗝️</span>
+            </div>
+            <h2 class="portal-title">RECEIVE WISH</h2>
+            <p class="portal-desc">
+              Have a 12-digit code? Unlock the ancient wooden door, dive into the 3D Black Hole vortex, and unveil your greeting!
+            </p>
+            <div class="portal-features">
+              <span>✦ Locked Wooden Vault Gate</span>
+              <span>✦ 3D WebGL Singularity Vortex</span>
+              <span>✦ Cyber 0% - 100% Decryption</span>
+            </div>
+            <button class="portal-action-btn receive-btn-theme">
+              Unlock Portal →
+            </button>
+          </div>
+        </div>
+
+        <!-- Trust & Ephemeral Storage Info Banner -->
+        <div class="ephemeral-info-bar">
+          <div class="info-pill">
+            <span class="info-icon">⏱️</span>
+            <span><strong>7-Day Ephemeral Storage:</strong> Greetings auto-clear automatically after 1 week.</span>
+          </div>
+          <div class="info-pill">
+            <span class="info-icon">📱</span>
+            <span><strong>Chrome & Android Ready:</strong> Full touch, retina scaling & haptic integration.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: SEND CATEGORY (Options 1, 2, 3 + Proceed) -->
+    <!-- ========================================== -->
+    <section id="view-send" class="view-screen">
+      <div class="send-container">
+        
+        <div class="section-header-centered">
+          <span class="hero-chip">CREATION WORKSPACE</span>
+          <h2 class="section-heading">Craft Your Celestial Capsule</h2>
+          <p class="section-subtext">Complete the 3 options below to forge your personalized presentation greeting.</p>
+        </div>
+
+        <!-- Stepper Navigation Display -->
+        <div class="send-stepper">
+          <div class="step-indicator active">
+            <span class="step-num">1</span>
+            <span class="step-label">Select Wish</span>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-indicator active">
+            <span class="step-num">2</span>
+            <span class="step-label">Live Calendar</span>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-indicator active">
+            <span class="step-num">3</span>
+            <span class="step-label">Say To Him (PPT)</span>
+          </div>
+        </div>
+
+        <!-- OPTION 1: SELECT YOUR WISH -->
+        <div class="send-card-panel" id="section-option-wish">
+          <div class="panel-header">
+            <div class="panel-step-badge">OPTION 1</div>
+            <h3 class="panel-title">Select Your Wish</h3>
+            <p class="panel-subtitle">Choose the celebration occasion or type your own custom wish.</p>
+          </div>
+
+          <div class="wish-options-grid">
+            <!-- 1. Happy Birthday -->
+            <div class="wish-option-card selected" data-wish="birthday" role="button" tabindex="0">
+              <div class="wish-icon">🎂</div>
+              <div class="wish-content">
+                <h4 class="wish-name">Happy Birthday</h4>
+                <p class="wish-detail">Celebratory cakes, balloons, confetti, and stellar birthday cheers.</p>
+              </div>
+              <div class="selection-check">✓</div>
+            </div>
+
+            <!-- 2. Congratulations -->
+            <div class="wish-option-card" data-wish="congrats" role="button" tabindex="0">
+              <div class="wish-icon">🏆</div>
+              <div class="wish-content">
+                <h4 class="wish-name">Congratulations</h4>
+                <p class="wish-detail">Honoring achievements, promotions, graduations, and glorious victories.</p>
+              </div>
+              <div class="selection-check">✓</div>
+            </div>
+
+            <!-- 3. Other (Custom) -->
+            <div class="wish-option-card" data-wish="other" role="button" tabindex="0">
+              <div class="wish-icon">✨</div>
+              <div class="wish-content">
+                <h4 class="wish-name">Other (Custom Occasion)</h4>
+                <p class="wish-detail">Anniversary, Farewell, Festival, Get Well Soon, or your custom title.</p>
+              </div>
+              <div class="selection-check">✓</div>
+            </div>
+          </div>
+
+          <!-- Dynamic Input for "Other" -->
+          <div id="custom-wish-container" class="custom-wish-box hidden">
+            <label for="custom-wish-input" class="custom-wish-label">Type Your Custom Wish / Occasion Title:</label>
+            <div class="input-with-icon">
+              <span class="field-icon">✍️</span>
+              <input type="text" id="custom-wish-input" placeholder="e.g., Happy 10th Anniversary! / Safe Travels!" maxlength="60" />
+            </div>
+          </div>
+        </div>
+
+        <!-- OPTION 2: SELECT DATE (LIVE CALENDAR) -->
+        <div class="send-card-panel" id="section-option-date">
+          <div class="panel-header">
+            <div class="panel-step-badge">OPTION 2</div>
+            <h3 class="panel-title">Select The Celebration Date</h3>
+            <p class="panel-subtitle">Choose the big day on the live interactive calendar.</p>
+          </div>
+
+          <div class="calendar-wrapper">
+            <!-- Quick Presets -->
+            <div class="calendar-presets">
+              <button class="date-quick-preset" data-offset="0">Today</button>
+              <button class="date-quick-preset" data-offset="1">Tomorrow</button>
+              <button class="date-quick-preset" data-offset="7">In 1 Week</button>
+            </div>
+
+            <!-- Interactive Live Calendar Card -->
+            <div class="calendar-card">
+              <div class="calendar-nav-bar">
+                <button id="cal-prev-month" class="cal-nav-btn" aria-label="Previous Month">❮</button>
+                <div id="calendar-month-year" class="cal-month-title">November 2026</div>
+                <button id="cal-next-month" class="cal-nav-btn" aria-label="Next Month">❯</button>
+              </div>
+
+              <!-- Day of week headers + Day cells -->
+              <div id="calendar-grid" class="calendar-grid"></div>
+
+              <div class="calendar-footer">
+                <div id="calendar-countdown-info" class="countdown-badge">
+                  Selected: Today • 🎉 Happening TODAY!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OPTION 3: SAY TO HIM (PPT-LIKE SLIDE EDITOR) -->
+        <div class="send-card-panel" id="section-option-say">
+          <div class="panel-header">
+            <div class="panel-step-badge">OPTION 3</div>
+            <h3 class="panel-title">Say To Him / Them (PPT Slide Editor)</h3>
+            <p class="panel-subtitle">Write, edit, and style your personalized greeting page just like PowerPoint!</p>
+          </div>
+
+          <!-- Slide Editor Toolbar -->
+          <div class="editor-toolbar">
+            <!-- Add Elements -->
+            <div class="toolbar-group">
+              <span class="toolbar-label">Add Content:</span>
+              <button id="btn-add-heading" class="tool-btn" title="Add Headline">+ Headline</button>
+              <button id="btn-add-body" class="tool-btn" title="Add Message Body">+ Message</button>
+              <button id="btn-add-cursive" class="tool-btn" title="Add Calligraphy Signature">+ Calligraphy</button>
+              <button id="btn-upload-photo" class="tool-btn tool-btn-highlight" title="Upload Photo">📷 Add Photo</button>
+              <input type="file" id="slide-image-upload" accept="image/*" class="hidden" />
+            </div>
+
+            <!-- Quick Celebratory Stickers -->
+            <div class="toolbar-group">
+              <span class="toolbar-label">Stickers:</span>
+              <div class="stickers-palette">
+                <button class="sticker-quick-btn" data-emoji="🎂">🎂</button>
+                <button class="sticker-quick-btn" data-emoji="🎉">🎉</button>
+                <button class="sticker-quick-btn" data-emoji="🎈">🎈</button>
+                <button class="sticker-quick-btn" data-emoji="🎁">🎁</button>
+                <button class="sticker-quick-btn" data-emoji="🌟">🌟</button>
+                <button class="sticker-quick-btn" data-emoji="🥂">🥂</button>
+                <button class="sticker-quick-btn" data-emoji="💖">💖</button>
+                <button class="sticker-quick-btn" data-emoji="🚀">🚀</button>
+                <button class="sticker-quick-btn" data-emoji="👑">👑</button>
+                <button class="sticker-quick-btn" data-emoji="🏆">🏆</button>
+                <button class="sticker-quick-btn" data-emoji="🌸">🌸</button>
+              </div>
+            </div>
+
+            <!-- Slide Background Themes -->
+            <div class="toolbar-group">
+              <span class="toolbar-label">Theme:</span>
+              <div class="bg-themes-palette">
+                <button class="bg-theme-option theme-cosmic" data-theme="bg-cosmic" title="Cosmic Nebula"></button>
+                <button class="bg-theme-option theme-golden" data-theme="bg-golden" title="Golden Gala"></button>
+                <button class="bg-theme-option theme-sunset" data-theme="bg-sunset" title="Romantic Sunset"></button>
+                <button class="bg-theme-option theme-cyber" data-theme="bg-cyber" title="Cyber Neon"></button>
+                <button class="bg-theme-option theme-pearl" data-theme="bg-pearl" title="Pearl Luxury"></button>
+              </div>
+            </div>
+
+            <!-- Selected Element Formatting (Contextual) -->
+            <div id="slide-text-controls" class="toolbar-group text-controls-group hidden">
+              <span class="toolbar-label">Format:</span>
+              <select id="slide-font-family" class="tool-select" title="Font Family">
+                <option value="'Poppins', sans-serif">Poppins (Clean)</option>
+                <option value="'Cinzel', serif">Cinzel (Regal)</option>
+                <option value="'Dancing Script', cursive">Dancing Script (Calligraphy)</option>
+                <option value="'Orbitron', sans-serif">Orbitron (Sci-Fi)</option>
+                <option value="'Rajdhani', sans-serif">Rajdhani (Modern)</option>
+              </select>
+
+              <div class="tool-input-wrap" title="Font Size">
+                <span class="tool-mini-label">Size</span>
+                <input type="range" id="slide-font-size" min="14" max="72" value="28" />
+              </div>
+
+              <div class="tool-input-wrap" title="Text Color">
+                <span class="tool-mini-label">Color</span>
+                <input type="color" id="slide-text-color" value="#ffffff" />
+              </div>
+
+              <label class="tool-checkbox-wrap" title="Toggle Glow Effect">
+                <input type="checkbox" id="slide-text-glow" />
+                <span>Glow</span>
+              </label>
+            </div>
+
+            <!-- Template Shortcuts -->
+            <div class="toolbar-group toolbar-group-end">
+              <button id="btn-template-birthday" class="tool-btn-ghost" title="Reset to Birthday Template">🎂 B-Day Preset</button>
+              <button id="btn-template-congrats" class="tool-btn-ghost" title="Reset to Congrats Template">🏆 Congrats Preset</button>
+              <button id="btn-clear-slide" class="tool-btn-ghost tool-btn-danger" title="Clear All Elements">Clear</button>
+            </div>
+          </div>
+
+          <!-- The PPT Slide Canvas Stage Container -->
+          <div id="slide-editor-container" class="editor-stage-outer"></div>
+          
+          <div class="editor-tips">
+            <span>💡 <strong>PPT Tips:</strong> Click any text to type directly. Drag items to reposition anywhere. Tap 'Add Photo' to upload a memory!</span>
+          </div>
+        </div>
+
+        <!-- FINAL PROCEED BUTTON (Generates 12-Digit Code) -->
+        <div class="proceed-action-area">
+          <button id="btn-proceed-send" class="btn-proceed-glowing">
+            <span class="proceed-icon">✨</span>
+            <span class="proceed-text">PROCEED & GENERATE 12-DIGIT CODE</span>
+            <span class="proceed-arrow">➔</span>
+          </button>
+          <p class="proceed-subtext">Locks greeting with 12-digit code & prepares interdimensional delivery.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: RECEIVE CATEGORY -->
+    <!-- ========================================== -->
+    <section id="view-receive" class="view-screen">
+      
+      <!-- STAGE 1: THE LOCKED WOODEN DOOR -->
+      <div id="receive-stage-door" class="receive-substage">
+        <div class="door-scene-container">
+          
+          <div class="door-header-info">
+            <span class="hero-chip">SECURITY GATEWAY</span>
+            <h2 class="door-title">The Sealed Vault Door</h2>
+            <p class="door-subtitle">Enter your 12-digit access code to break the seal and unlock the dimensional passage.</p>
+          </div>
+
+          <!-- 3D Realistic Wooden Door Component -->
+          <div class="wooden-door-perspective">
+            <div id="wooden-door-wrapper" class="wooden-door-wrapper">
+              
+              <!-- Left Wooden Door Leaf -->
+              <div class="door-leaf door-leaf-left">
+                <div class="wood-grain-overlay"></div>
+                <div class="iron-band band-top"></div>
+                <div class="iron-band band-bottom"></div>
+                <div class="iron-hinge hinge-top"></div>
+                <div class="iron-hinge hinge-bottom"></div>
+                <div class="iron-ring handle-left"></div>
+              </div>
+
+              <!-- Right Wooden Door Leaf -->
+              <div class="door-leaf door-leaf-right">
+                <div class="wood-grain-overlay"></div>
+                <div class="iron-band band-top"></div>
+                <div class="iron-band band-bottom"></div>
+                <div class="iron-hinge hinge-top"></div>
+                <div class="iron-hinge hinge-bottom"></div>
+                <div class="iron-ring handle-right"></div>
+              </div>
+
+              <!-- Heavy Antique Glowing Padlock -->
+              <div id="door-padlock" class="heavy-padlock">
+                <div class="padlock-shackle"></div>
+                <div class="padlock-body">
+                  <div class="keyhole-glow"></div>
+                </div>
+                <div class="padlock-chain chain-left"></div>
+                <div class="padlock-chain chain-right"></div>
+              </div>
+
+              <!-- Behind-door Portal Glow -->
+              <div class="behind-door-portal"></div>
+
+            </div>
+          </div>
+
+          <!-- Floating Holographic Cyber Keypad & Code Input -->
+          <div class="floating-keypad-panel">
+            <div class="keypad-glass-card">
+              <div class="keypad-status-bar">
+                <span class="status-dot"></span>
+                <span class="status-label">VAULT LOCK ENCRYPTION: ACTIVE</span>
+              </div>
+
+              <label for="door-code-input" class="keypad-label">ENTER 12-DIGIT ALPHANUMERIC CODE</label>
+              
+              <div class="code-input-box">
+                <input
+                  type="text"
+                  id="door-code-input"
+                  class="code-input-field"
+                  placeholder="XXXX-XXXX-XXXX"
+                  maxlength="14"
+                  autocomplete="off"
+                  autocapitalize="characters"
+                  spellcheck="false"
+                />
+              </div>
+
+              <!-- Error Symbol & Access Denied Banner -->
+              <div id="door-access-denied" class="access-denied-box hidden">
+                <span class="denied-icon">⚠️</span>
+                <div class="denied-content">
+                  <div class="denied-title">ACCESS DENIED</div>
+                  <div id="door-error-message" class="denied-desc">Code not recognized or expired (> 7 days).</div>
+                </div>
+              </div>
+
+              <button id="btn-door-unlock" class="btn-unlock-vault">
+                <span class="btn-lock-icon">🔓</span>
+                <span>UNLOCK PORTAL</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- STAGE 2: 3D OUTER SPACE WITH CENTERED BLACK HOLE -->
+      <div id="receive-stage-blackhole" class="receive-substage hidden">
+        <!-- Fullscreen WebGL Canvas for 3D Black Hole -->
+        <canvas id="blackhole-canvas" class="blackhole-canvas"></canvas>
+
+        <!-- Centered Interactive Holographic Entry Button -->
+        <div id="blackhole-ui-overlay" class="blackhole-ui-overlay">
+          <div class="blackhole-center-badge">
+            <div class="orbit-rings-deco"></div>
+            <button id="btn-enter-blackhole" class="btn-enter-singularity">
+              <span class="singularity-pulse"></span>
+              <span class="singularity-text">★ ENTER SINGULARITY ★</span>
+            </button>
+            <p class="singularity-hint">Tap to warp into the black hole and decode your message</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 3 & 4: CYBER THEME LOADING ANIMATION (0% TO 100%) IN DEEP SPACE -->
+      <div id="receive-stage-loading" class="receive-substage hidden">
+        <div class="cyber-loading-container">
+          <div class="cyber-hud-frame">
+            
+            <div class="cyber-ring-meter">
+              <div class="cyber-spinner"></div>
+              <div id="cyber-percent" class="cyber-percent-number">0%</div>
+            </div>
+
+            <div class="cyber-progress-track">
+              <div id="cyber-progress-fill" class="cyber-progress-fill"></div>
+            </div>
+
+            <div class="cyber-terminal-card">
+              <div class="terminal-bar">
+                <span class="terminal-dot red"></span>
+                <span class="terminal-dot yellow"></span>
+                <span class="terminal-dot green"></span>
+                <span class="terminal-title">QUANTUM_DECRYPT_VORTEX.SH</span>
+              </div>
+              <div id="cyber-terminal-logs" class="terminal-body">
+                <div class="cyber-log-line">[SYS_INIT] SINGULARITY HORIZON CROSSED...</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 5: GRAND GREETING REVEAL PAGE -->
+      <div id="receive-stage-reveal" class="receive-substage hidden">
+        <div class="reveal-container">
+          
+          <div class="reveal-top-banner">
+            <span class="hero-chip">TRANSMISSION DECRYPTED</span>
+            
+            <!-- 1. The Wish Title Displayed -->
+            <h1 id="reveal-wish-title" class="reveal-main-wish gradient-text">Happy Birthday!</h1>
+            <p id="reveal-wish-sub" class="reveal-sub-wish">A special greeting delivered across the cosmos</p>
+
+            <!-- 2. The Celebration Date Plaque -->
+            <div class="reveal-date-badge">
+              <span class="date-icon">📅</span>
+              <div class="date-details">
+                <div class="date-tag">CELEBRATION DATE</div>
+                <div id="reveal-date-value" class="date-formatted">Saturday, November 28, 2026</div>
+                <div id="reveal-date-desc" class="date-status">Coming up soon!</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. The PPT-Style Presentation Slide (Rendered Read-Only) -->
+          <div class="reveal-slide-wrapper">
+            <div class="slide-presentation-frame">
+              <div id="reveal-slide-stage" class="slide-stage read-only"></div>
+            </div>
+          </div>
+
+          <!-- Interactive Celebration Controls -->
+          <div class="reveal-actions-toolbar">
+            <button id="btn-replay-reveal" class="reveal-btn btn-confetti">
+              🎉 Launch Confetti!
+            </button>
+            <button id="btn-create-another-wish" class="reveal-btn btn-send-new">
+              ✨ Send Your Own Greeting
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL: PROCEED SUCCESS & 12-DIGIT CODE MODAL -->
+  <!-- ========================================== -->
+  <div id="proceed-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button id="btn-close-modal" class="modal-close-btn" aria-label="Close Modal">✕</button>
+
+      <div class="modal-icon-badge">✨</div>
+      <h3 class="modal-title">Celestial Greeting Sealed!</h3>
+      <p class="modal-subtitle">Your greeting is locked and primed for delivery. Share this 12-digit key with your recipient:</p>
+
+      <!-- 12-Digit Code Display -->
+      <div class="modal-code-display">
+        <div class="code-label">12-DIGIT COSMIC KEY:</div>
+        <div id="modal-generated-code" class="code-value">ABCD-1234-EFGH</div>
+        <button id="btn-copy-code" class="modal-action-btn copy-btn">Copy Code</button>
+      </div>
+
+      <!-- Shareable Direct Link -->
+      <div class="modal-link-box">
+        <label for="modal-share-link" class="modal-label">Direct Unlock Link:</label>
+        <div class="link-input-group">
+          <input type="text" id="modal-share-link" readonly />
+          <button id="btn-copy-link" class="modal-action-btn">Copy Link</button>
+        </div>
+      </div>
+
+      <!-- WhatsApp / Android Web Share -->
+      <button id="btn-share-native" class="modal-share-full-btn">
+        <span>📲 Share via WhatsApp / Android</span>
+      </button>
+
+      <!-- 7-Day Auto-Purge Notice -->
+      <div class="modal-expiry-box">
+        <span class="expiry-icon">⏱️</span>
+        <div id="modal-expiry-notice" class="expiry-text">
+          Ephemeral storage: Auto-clears automatically after 7 days.
+        </div>
+      </div>
+
+      <!-- Shortcut to test in Receive Portal -->
+      <div class="modal-footer-btns">
+        <button id="btn-test-in-receive" class="btn-test-receive">
+          🗝️ Test & Preview in Receive Portal →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/blackhole.js"></script>
+  <script src="js/canvas-editor.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
