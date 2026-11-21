@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Dancing+Script:wght@600;700&family=Orbitron:wght@500;700;900&family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/style.css">
 
   <!-- Confetti Canvas Library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -333,6 +333,16 @@
               </label>
             </div>
 
+            <!-- Selected Element Position / Nudge Controls -->
+            <div id="slide-move-controls" class="toolbar-group move-controls-group hidden">
+              <span class="toolbar-label">Move:</span>
+              <button id="btn-nudge-left" class="tool-btn" title="Nudge Left">◀</button>
+              <button id="btn-nudge-up" class="tool-btn" title="Nudge Up">▲</button>
+              <button id="btn-nudge-down" class="tool-btn" title="Nudge Down">▼</button>
+              <button id="btn-nudge-right" class="tool-btn" title="Nudge Right">▶</button>
+              <button id="btn-nudge-center" class="tool-btn" title="Center on Slide">⫿ Center</button>
+            </div>
+
             <!-- Template Shortcuts -->
             <div class="toolbar-group toolbar-group-end">
               <button id="btn-template-birthday" class="tool-btn-ghost" title="Reset to Birthday Template">🎂 B-Day Preset</button>
@@ -345,7 +355,46 @@
           <div id="slide-editor-container" class="editor-stage-outer"></div>
           
           <div class="editor-tips">
-            <span>💡 <strong>PPT Tips:</strong> Click any text to type directly. Drag items to reposition anywhere. Tap 'Add Photo' to upload a memory!</span>
+            <span>💡 <strong>PPT Tips:</strong> Click and drag any text or sticker to move it anywhere! Double-click (or tap ✎) to type text. Use the arrows to nudge!</span>
+          </div>
+        </div>
+
+        <!-- OPTION 4: CUSTOM GREETING AUDIO / MUSIC / VOICE NOTE -->
+        <div class="send-card-panel" id="section-option-audio">
+          <div class="panel-header">
+            <div class="panel-step-badge">OPTION 4 (OPTIONAL)</div>
+            <h3 class="panel-title">Add Celebration Song or Voice Message</h3>
+            <p class="panel-subtitle">Upload a custom MP3 celebration song or voice note that will play when your recipient unlocks the vault!</p>
+          </div>
+
+          <div class="greeting-audio-box">
+            <input type="file" id="greeting-custom-audio-file" accept="audio/*" class="hidden" />
+            
+            <div class="greeting-audio-upload-zone" id="zone-audio-upload">
+              <span class="upload-zone-icon">🎙️</span>
+              <div class="upload-zone-texts">
+                <span class="upload-zone-title">Upload Custom Audio / Song</span>
+                <span class="upload-zone-sub">Supports MP3, WAV, M4A, OGG, WebM</span>
+              </div>
+              <button type="button" id="btn-browse-audio" class="portal-action-btn send-btn-theme" style="width: auto; padding: 10px 22px;">
+                📁 Select Audio File
+              </button>
+            </div>
+
+            <!-- Audio Attached Preview (Shown after upload) -->
+            <div id="greeting-audio-preview" class="greeting-audio-preview-card hidden">
+              <div class="audio-preview-info">
+                <span class="audio-preview-icon">🎵</span>
+                <div class="audio-preview-meta">
+                  <span id="greeting-audio-name" class="audio-preview-name">celebration_song.mp3</span>
+                  <span class="audio-preview-badge">✓ Custom Audio Attached</span>
+                </div>
+              </div>
+              <div class="audio-preview-actions">
+                <button type="button" id="btn-play-preview-audio" class="tool-btn" title="Preview Audio">▶ Preview</button>
+                <button type="button" id="btn-remove-preview-audio" class="tool-btn tool-btn-danger" title="Remove Audio">✕ Remove</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -577,6 +626,18 @@
                 <div id="reveal-date-desc" class="date-status">Coming up soon!</div>
               </div>
             </div>
+
+            <!-- Attached Custom Celebration Audio Bar (Shown if sender attached audio) -->
+            <div id="reveal-audio-player" class="reveal-audio-banner hidden">
+              <span class="reveal-audio-icon">🎶</span>
+              <div class="reveal-audio-details">
+                <span class="reveal-audio-tag">SPECIAL SONG ATTACHED BY SENDER</span>
+                <span id="reveal-audio-title" class="reveal-audio-title">celebration_song.mp3</span>
+              </div>
+              <button type="button" id="btn-reveal-audio-toggle" class="reveal-audio-btn">
+                <span id="reveal-audio-btn-icon">▶</span> <span id="reveal-audio-btn-text">Play Song</span>
+              </button>
+            </div>
           </div>
 
           <!-- 3. The PPT-Style Presentation Slide (Rendered Read-Only) -->
@@ -769,10 +830,10 @@
   </div>
 
   <!-- Application Scripts -->
-  <script src="audio.js"></script>
-  <script src="blackhole.js"></script>
-  <script src="canvas-editor.js"></script>
-  <script src="storage.js"></script>
-  <script src="app.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/blackhole.js"></script>
+  <script src="js/canvas-editor.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

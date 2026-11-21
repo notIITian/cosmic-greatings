@@ -19,6 +19,9 @@
     blackHole: null,
     unlockedGreeting: null,
     isProcessingUnlock: false,
+    greetingAudioData: null,
+    previewAudio: null,
+    revealAudioObj: null,
     blackHoleTheme: 'gargantua',
     doorWoodTheme: 'wood-oak',
     nebulaTheme: 'nebula-deep',
@@ -344,6 +347,16 @@
       }
     }
 
+    // Stop active audio on view change
+    if (viewName !== 'receive' && state.revealAudioObj) {
+      state.revealAudioObj.pause();
+    }
+    if (viewName !== 'send' && state.previewAudio) {
+      state.previewAudio.pause();
+      const btnPlayAudioPreview = document.getElementById('btn-play-preview-audio');
+      if (btnPlayAudioPreview) btnPlayAudioPreview.innerHTML = '▶ Preview';
+    }
+
     // View-specific initializations
     if (viewName === 'send') {
       initSendView();
@@ -501,7 +514,8 @@
       wishType: state.selectedWishType,
       customWish: state.customWishText,
       date: state.selectedDate,
-      slideData: slideData
+      slideData: slideData,
+      audioData: state.greetingAudioData || null
     };
 
     if (window.SoundSystem) window.SoundSystem.playLockUnlock();
@@ -786,6 +800,66 @@
       SlideEditor.renderReadOnly(slideContainer, greeting.slideData);
     }
 
+    // 4. Custom Celebration Audio Player (if attached by sender)
+    const revealAudioPlayer = document.getElementById('reveal-audio-player');
+    const revealAudioTitle = document.getElementById('reveal-audio-title');
+    const btnRevealAudioToggle = document.getElementById('btn-reveal-audio-toggle');
+    const revealAudioBtnIcon = document.getElementById('reveal-audio-btn-icon');
+    const revealAudioBtnText = document.getElementById('reveal-audio-btn-text');
+
+    if (revealAudioPlayer) {
+      if (greeting.audioData && greeting.audioData.dataUrl) {
+        revealAudioPlayer.classList.remove('hidden');
+        if (revealAudioTitle) {
+          revealAudioTitle.textContent = greeting.audioData.name || "Special Celebration Song";
+        }
+
+        if (state.revealAudioObj) {
+          state.revealAudioObj.pause();
+          state.revealAudioObj = null;
+        }
+
+        state.revealAudioObj = new Audio(greeting.audioData.dataUrl);
+        state.revealAudioObj.loop = true;
+
+        const updateAudioBtnUI = (isPlaying) => {
+          if (revealAudioBtnIcon) revealAudioBtnIcon.textContent = isPlaying ? '❚❚' : '▶';
+          if (revealAudioBtnText) revealAudioBtnText.textContent = isPlaying ? 'Pause Song' : 'Play Song';
+          if (revealAudioPlayer) {
+            if (isPlaying) revealAudioPlayer.classList.add('audio-active');
+            else revealAudioPlayer.classList.remove('audio-active');
+          }
+        };
+
+        // Try playing sender's custom song
+        state.revealAudioObj.play().then(() => {
+          updateAudioBtnUI(true);
+          // Pause synthesizer background music so custom track takes full spotlight
+          if (window.SoundSystem && window.SoundSystem.bgmPlaying) {
+            window.SoundSystem.stopBackgroundMusic();
+          }
+        }).catch(() => {
+          // Autoplay blocked by browser policy without user gesture
+          updateAudioBtnUI(false);
+        });
+
+        if (btnRevealAudioToggle) {
+          btnRevealAudioToggle.onclick = (e) => {
+            e.stopPropagation();
+            if (!state.revealAudioObj) return;
+            if (state.revealAudioObj.paused) {
+              state.revealAudioObj.play().then(() => updateAudioBtnUI(true)).catch(() => {});
+            } else {
+              state.revealAudioObj.pause();
+              updateAudioBtnUI(false);
+            }
+          };
+        }
+      } else {
+        revealAudioPlayer.classList.add('hidden');
+      }
+    }
+
     // Fanfare and Confetti
     if (window.SoundSystem) window.SoundSystem.playCelebrationFanfare();
     triggerCelebrationConfetti(120);
@@ -970,6 +1044,163 @@
     const fontGlowCheckbox = document.getElementById('slide-text-glow');
     if (fontGlowCheckbox) {
       fontGlowCheckbox.addEventListener('change', (e) => state.slideEditor && state.slideEditor.updateSelected('textGlow', e.target.checked));
+    }
+
+    // Slide Editor Move & Nudge Position Controls
+    const btnNudgeLeft = document.getElementById('btn-nudge-left');
+    if (btnNudgeLeft) {
+      btnNudgeLeft.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (state.slideEditor) state.slideEditor.nudgeSelected(-2, 0);
+      });
+    }
+    const btnNudgeRight = document.getElementById('btn-nudge-right');
+    if (btnNudgeRight) {
+      btnNudgeRight.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (state.slideEditor) state.slideEditor.nudgeSelected(2, 0);
+      });
+    }
+    const btnNudgeUp = document.getElementById('btn-nudge-up');
+    if (btnNudgeUp) {
+      btnNudgeUp.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (state.slideEditor) state.slideEditor.nudgeSelected(0, -2);
+      });
+    }
+    const btnNudgeDown = document.getElementById('btn-nudge-down');
+    if (btnNudgeDown) {
+      btnNudgeDown.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (state.slideEditor) state.slideEditor.nudgeSelected(0, 2);
+      });
+    }
+    const btnNudgeCenter = document.getElementById('btn-nudge-center');
+    if (btnNudgeCenter) {
+      btnNudgeCenter.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (state.slideEditor) state.slideEditor.centerSelected();
+      });
+    }
+
+    // --- Option 4: Custom Audio Upload (Celebration Song / Voice Message) ---
+    const greetingAudioFileInput = document.getElementById('greeting-custom-audio-file');
+    const btnBrowseAudio = document.getElementById('btn-browse-audio');
+    const zoneAudioUpload = document.getElementById('zone-audio-upload');
+    const greetingAudioPreview = document.getElementById('greeting-audio-preview');
+    const greetingAudioName = document.getElementById('greeting-audio-name');
+    const btnPlayAudioPreview = document.getElementById('btn-play-preview-audio');
+    const btnRemoveAudioPreview = document.getElementById('btn-remove-preview-audio');
+
+    const handleUploadedGreetingAudio = (file) => {
+      if (!file) return;
+      if (!file.type.startsWith('audio/') && !/\.(mp3|wav|ogg|m4a|aac|webm)$/i.test(file.name)) {
+        alert("Please select a valid audio file (MP3, WAV, M4A, OGG).");
+        return;
+      }
+      if (file.size > 8 * 1024 * 1024) {
+        alert("Audio file is larger than 8MB. Please choose a smaller track for fast cosmic loading.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        state.greetingAudioData = {
+          name: file.name,
+          dataUrl: ev.target.result,
+          size: file.size,
+          type: file.type || 'audio/mp3'
+        };
+
+        if (greetingAudioName) greetingAudioName.textContent = file.name;
+        if (zoneAudioUpload) zoneAudioUpload.classList.add('hidden');
+        if (greetingAudioPreview) greetingAudioPreview.classList.remove('hidden');
+
+        if (btnPlayAudioPreview) btnPlayAudioPreview.innerHTML = '▶ Preview';
+        if (state.previewAudio) {
+          state.previewAudio.pause();
+          state.previewAudio = null;
+        }
+
+        if (window.SoundSystem) window.SoundSystem.playClick();
+      };
+      reader.readAsDataURL(file);
+    };
+
+    if (btnBrowseAudio && greetingAudioFileInput) {
+      btnBrowseAudio.addEventListener('click', (e) => {
+        e.stopPropagation();
+        greetingAudioFileInput.click();
+      });
+    }
+
+    if (zoneAudioUpload && greetingAudioFileInput) {
+      zoneAudioUpload.addEventListener('click', () => {
+        greetingAudioFileInput.click();
+      });
+
+      zoneAudioUpload.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zoneAudioUpload.style.borderColor = 'var(--primary-cyan)';
+      });
+      zoneAudioUpload.addEventListener('dragleave', () => {
+        zoneAudioUpload.style.borderColor = '';
+      });
+      zoneAudioUpload.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zoneAudioUpload.style.borderColor = '';
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleUploadedGreetingAudio(e.dataTransfer.files[0]);
+        }
+      });
+    }
+
+    if (greetingAudioFileInput) {
+      greetingAudioFileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          handleUploadedGreetingAudio(e.target.files[0]);
+        }
+      });
+    }
+
+    if (btnPlayAudioPreview) {
+      btnPlayAudioPreview.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!state.greetingAudioData || !state.greetingAudioData.dataUrl) return;
+
+        if (state.previewAudio && !state.previewAudio.paused) {
+          state.previewAudio.pause();
+          btnPlayAudioPreview.innerHTML = '▶ Preview';
+        } else {
+          if (!state.previewAudio) {
+            state.previewAudio = new Audio(state.greetingAudioData.dataUrl);
+            state.previewAudio.addEventListener('ended', () => {
+              btnPlayAudioPreview.innerHTML = '▶ Preview';
+            });
+          }
+          state.previewAudio.play().then(() => {
+            btnPlayAudioPreview.innerHTML = '❚❚ Pause';
+          }).catch(err => {
+            console.warn("Audio preview playback failed:", err);
+          });
+        }
+      });
+    }
+
+    if (btnRemoveAudioPreview) {
+      btnRemoveAudioPreview.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (state.previewAudio) {
+          state.previewAudio.pause();
+          state.previewAudio = null;
+        }
+        state.greetingAudioData = null;
+        if (greetingAudioFileInput) greetingAudioFileInput.value = '';
+        if (greetingAudioPreview) greetingAudioPreview.classList.add('hidden');
+        if (zoneAudioUpload) zoneAudioUpload.classList.remove('hidden');
+        if (btnPlayAudioPreview) btnPlayAudioPreview.innerHTML = '▶ Preview';
+        if (window.SoundSystem) window.SoundSystem.playClick();
+      });
     }
 
     // Template Presets

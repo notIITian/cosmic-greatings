@@ -1,7 +1,7 @@
 /**
  * PPT-Style Interactive Slide Canvas Editor
  * Allows users to write, drag, style, add stickers & photos just like PowerPoint!
- * Fully responsive for Desktop Chrome and Android touch devices.
+ * Handcrafted & ultra-responsive for Desktop Chrome and Android touch devices.
  */
 
 class SlideEditor {
@@ -45,11 +45,11 @@ class SlideEditor {
     // Global pointer move & up for smooth dragging on both mouse & touch
     window.addEventListener('pointermove', (e) => this.onPointerMove(e));
     window.addEventListener('pointerup', () => this.onPointerUp());
+    window.addEventListener('pointercancel', () => this.onPointerUp());
 
     // Keyboard shortcuts (Delete/Backspace to remove selected)
     window.addEventListener('keydown', (e) => {
       if ((e.key === 'Delete' || e.key === 'Backspace') && this.selectedElementId) {
-        // Only if not actively editing text inside contentEditable
         const activeEl = document.activeElement;
         if (!activeEl || !activeEl.isContentEditable) {
           e.preventDefault();
@@ -96,8 +96,8 @@ class SlideEditor {
       id: id,
       type: "text",
       text: text,
-      x: 10 + Math.random() * 10, // percentage of stage
-      y: y + (Math.random() * 6 - 3),
+      x: 10 + Math.random() * 8, // percentage of stage
+      y: y + (Math.random() * 4 - 2),
       fontSize: fontSize,
       fontWeight: fontWeight,
       fontFamily: fontFamily,
@@ -165,8 +165,15 @@ class SlideEditor {
     if (item.type === 'text') {
       el.style.width = item.width ? `${item.width}%` : 'auto';
       el.innerHTML = `
+        <div class="item-header-controls">
+          <div class="item-drag-handle" title="Drag to move text anywhere">
+            <span class="drag-icon">✥</span> Move
+          </div>
+          <button class="ctrl-btn edit-btn" title="Edit Text">✎</button>
+          <button class="ctrl-btn delete-btn" title="Delete">✕</button>
+        </div>
         <div class="slide-item-content text-content"
-             contenteditable="true"
+             contenteditable="false"
              spellcheck="false"
              style="
                font-family: ${item.fontFamily};
@@ -176,36 +183,87 @@ class SlideEditor {
                text-align: ${item.textAlign};
                ${item.textGlow ? `text-shadow: 0 0 15px ${item.color}, 0 0 30px ${item.color};` : ''}
              ">${item.text}</div>
-        <div class="item-controls">
-          <button class="ctrl-btn delete-btn" title="Delete">✕</button>
-        </div>
       `;
 
-      // Live content editable update
       const contentEl = el.querySelector('.text-content');
+      const editBtn = el.querySelector('.edit-btn');
+
+      // Enable text editing function
+      const enableEdit = () => {
+        contentEl.contentEditable = "true";
+        el.classList.add('is-editing');
+        contentEl.focus();
+        // Select all text on double click
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(contentEl);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      };
+
+      const disableEdit = () => {
+        contentEl.contentEditable = "false";
+        el.classList.remove('is-editing');
+        item.text = contentEl.innerHTML;
+      };
+
+      if (editBtn) {
+        editBtn.addEventListener('pointerdown', (e) => {
+          e.stopPropagation();
+          enableEdit();
+        });
+      }
+
+      // Double-click to edit text
+      el.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        enableEdit();
+      });
+
+      // Quick double-tap support for mobile touch screens
+      let lastTapTime = 0;
+      el.addEventListener('pointerup', (e) => {
+        if (this.activeDrag && this.activeDrag.hasMoved) return;
+        if (item.type === 'text' && !el.classList.contains('is-editing') && !e.target.closest('.ctrl-btn')) {
+          const now = Date.now();
+          if (now - lastTapTime < 350) {
+            enableEdit();
+          }
+          lastTapTime = now;
+        }
+      });
+
+      // Update text in item
       contentEl.addEventListener('input', () => {
         item.text = contentEl.innerHTML;
       });
-      contentEl.addEventListener('focus', () => {
-        this.selectElement(item.id);
+
+      contentEl.addEventListener('blur', () => {
+        disableEdit();
       });
 
     } else if (item.type === 'sticker') {
       el.innerHTML = `
+        <div class="item-header-controls">
+          <div class="item-drag-handle" title="Drag to move sticker">
+            <span class="drag-icon">✥</span> Move
+          </div>
+          <button class="ctrl-btn delete-btn" title="Delete">✕</button>
+        </div>
         <div class="slide-item-content sticker-content" style="font-size: ${item.fontSize}px; transform: rotate(${item.rotation || 0}deg);">
           ${item.emoji}
-        </div>
-        <div class="item-controls">
-          <button class="ctrl-btn delete-btn" title="Delete">✕</button>
         </div>
       `;
     } else if (item.type === 'image') {
       el.innerHTML = `
+        <div class="item-header-controls">
+          <div class="item-drag-handle" title="Drag to move image">
+            <span class="drag-icon">✥</span> Move
+          </div>
+          <button class="ctrl-btn delete-btn" title="Delete">✕</button>
+        </div>
         <div class="slide-item-content image-content" style="width: ${item.width || 30}vw; max-width: 280px;">
           <img src="${item.src}" alt="Celebration Image" style="width: 100%; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); pointer-events: none;" />
-        </div>
-        <div class="item-controls">
-          <button class="ctrl-btn delete-btn" title="Delete">✕</button>
         </div>
       `;
     }
@@ -219,26 +277,43 @@ class SlideEditor {
       });
     }
 
-    // Drag handling
-    el.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.delete-btn') || e.target.isContentEditable) {
-        this.selectElement(item.id);
-        return;
-      }
-      e.preventDefault();
+    // Unified Drag Handling (Drag Handle + Entire Box when not typing!)
+    const startDragHandler = (e) => {
+      // Don't drag if clicking delete button or if actively editing text
+      if (e.target.closest('.delete-btn') || e.target.closest('.edit-btn')) return;
+      if (el.classList.contains('is-editing') && e.target.closest('.text-content')) return;
+
+      e.stopPropagation();
       this.selectElement(item.id);
+
+      // Pointer capture for flawless tracking across screen boundaries
+      if (e.pointerId !== undefined && e.currentTarget && e.currentTarget.setPointerCapture) {
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch(err) {}
+      }
 
       const stageRect = this.stage.getBoundingClientRect();
       this.activeDrag = {
         itemId: item.id,
+        targetEl: e.currentTarget,
+        pointerId: e.pointerId,
         startX: e.clientX,
         startY: e.clientY,
         itemOrigX: item.x,
         itemOrigY: item.y,
-        stageWidth: stageRect.width,
-        stageHeight: stageRect.height
+        stageWidth: stageRect.width || 1,
+        stageHeight: stageRect.height || 1,
+        hasMoved: false
       };
-    });
+    };
+
+    // Listen on the dedicated Drag Handle
+    const dragHandle = el.querySelector('.item-drag-handle');
+    if (dragHandle) {
+      dragHandle.addEventListener('pointerdown', startDragHandler);
+    }
+
+    // Also listen on the entire element wrapper
+    el.addEventListener('pointerdown', startDragHandler);
 
     this.elementsLayer.appendChild(el);
   }
@@ -248,6 +323,11 @@ class SlideEditor {
 
     const deltaX = e.clientX - this.activeDrag.startX;
     const deltaY = e.clientY - this.activeDrag.startY;
+
+    if (!this.activeDrag.hasMoved && Math.hypot(deltaX, deltaY) < 2) {
+      return;
+    }
+    this.activeDrag.hasMoved = true;
 
     const deltaPercentX = (deltaX / this.activeDrag.stageWidth) * 100;
     const deltaPercentY = (deltaY / this.activeDrag.stageHeight) * 100;
@@ -260,13 +340,49 @@ class SlideEditor {
 
     const domEl = document.getElementById(item.id);
     if (domEl) {
-      domEl.style.left = `${item.x}%`;
-      domEl.style.top = `${item.y}%`;
+      domEl.style.left = `${item.x.toFixed(2)}%`;
+      domEl.style.top = `${item.y.toFixed(2)}%`;
     }
   }
 
-  onPointerUp() {
+  onPointerUp(e) {
+    if (this.activeDrag && this.activeDrag.targetEl && this.activeDrag.pointerId !== undefined) {
+      try { this.activeDrag.targetEl.releasePointerCapture(this.activeDrag.pointerId); } catch(err) {}
+    }
     this.activeDrag = null;
+  }
+
+  // Nudge selected element in pixels/percentages (Arrows in toolbar)
+  nudgeSelected(deltaX, deltaY) {
+    if (!this.selectedElementId) return;
+    const item = this.elements.find(i => i.id === this.selectedElementId);
+    if (!item) return;
+
+    item.x = Math.max(0, Math.min(95, (item.x || 0) + deltaX));
+    item.y = Math.max(0, Math.min(90, (item.y || 0) + deltaY));
+
+    const domEl = document.getElementById(item.id);
+    if (domEl) {
+      domEl.style.left = `${item.x.toFixed(2)}%`;
+      domEl.style.top = `${item.y.toFixed(2)}%`;
+    }
+    if (window.SoundSystem) window.SoundSystem.playClick();
+  }
+
+  // Horizontally center selected element
+  centerSelected() {
+    if (!this.selectedElementId) return;
+    const item = this.elements.find(i => i.id === this.selectedElementId);
+    if (!item) return;
+
+    const w = item.width || 40;
+    item.x = Math.max(0, (100 - w) / 2);
+
+    const domEl = document.getElementById(item.id);
+    if (domEl) {
+      domEl.style.left = `${item.x.toFixed(2)}%`;
+    }
+    if (window.SoundSystem) window.SoundSystem.playClick();
   }
 
   selectElement(id) {
@@ -283,6 +399,9 @@ class SlideEditor {
     this.selectedElementId = null;
     this.elementsLayer.querySelectorAll('.slide-item').forEach(el => {
       el.classList.remove('selected');
+      el.classList.remove('is-editing');
+      const text = el.querySelector('.text-content');
+      if (text) text.contentEditable = "false";
     });
     this.syncToolbarWithElement(null);
   }
@@ -347,21 +466,28 @@ class SlideEditor {
   syncToolbarWithElement(id) {
     const item = this.elements.find(i => i.id === id);
     const textControls = document.getElementById('slide-text-controls');
-    if (!textControls) return;
+    const moveControls = document.getElementById('slide-move-controls');
 
-    if (item && item.type === 'text') {
-      textControls.classList.remove('hidden');
-      const fontSelect = document.getElementById('slide-font-family');
-      const sizeInput = document.getElementById('slide-font-size');
-      const colorInput = document.getElementById('slide-text-color');
-      const glowCheckbox = document.getElementById('slide-text-glow');
+    if (item) {
+      if (moveControls) moveControls.classList.remove('hidden');
 
-      if (fontSelect) fontSelect.value = item.fontFamily;
-      if (sizeInput) sizeInput.value = item.fontSize;
-      if (colorInput) colorInput.value = item.color;
-      if (glowCheckbox) glowCheckbox.checked = !!item.textGlow;
+      if (item.type === 'text') {
+        if (textControls) textControls.classList.remove('hidden');
+        const fontSelect = document.getElementById('slide-font-family');
+        const sizeInput = document.getElementById('slide-font-size');
+        const colorInput = document.getElementById('slide-text-color');
+        const glowCheckbox = document.getElementById('slide-text-glow');
+
+        if (fontSelect) fontSelect.value = item.fontFamily;
+        if (sizeInput) sizeInput.value = item.fontSize;
+        if (colorInput) colorInput.value = item.color;
+        if (glowCheckbox) glowCheckbox.checked = !!item.textGlow;
+      } else {
+        if (textControls) textControls.classList.add('hidden');
+      }
     } else {
-      textControls.classList.add('hidden');
+      if (textControls) textControls.classList.add('hidden');
+      if (moveControls) moveControls.classList.add('hidden');
     }
   }
 

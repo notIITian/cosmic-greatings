@@ -136,6 +136,9 @@ class CelestialStorageManager {
       s: payload.slideData,
       a: now
     };
+    if (payload.audioData && payload.audioData.dataUrl && payload.audioData.dataUrl.length < 60000) {
+      urlPayload.m = payload.audioData;
+    }
     const compressedStr = this.compressToUrl(urlPayload);
 
     // Build the direct share link
@@ -298,6 +301,7 @@ class CelestialStorageManager {
           wishType: decoded.t,
           date: decoded.d,
           slideData: decoded.s,
+          audioData: decoded.m || null,
           createdAt: decoded.a || Date.now()
         };
         if (!targetCode || this.normalizeCode(greeting.code) === targetCode) {
@@ -327,6 +331,7 @@ class CelestialStorageManager {
           wishType: decoded.t,
           date: decoded.d,
           slideData: decoded.s,
+          audioData: decoded.m || null,
           createdAt: decoded.a || Date.now()
         };
         // Cache immediately in local storage
